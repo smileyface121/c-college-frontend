@@ -1,4 +1,6 @@
 
+import '../styles/globals.css'; 
+
 export const metadata = {
   title: 'Celcor College Quiz',
   description: 'Thermodynamics quiz frontend',

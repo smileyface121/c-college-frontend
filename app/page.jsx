@@ -39,12 +39,13 @@ export default function QuizApp() {
           <p className="font-semibold mb-2">{i + 1}. {q.question}</p>
           {q.options.map((opt, idx) => (
             <button
-              key={idx}
-              className={\`block w-full text-left px-4 py-2 my-1 border rounded hover:bg-blue-100 \${answers[q._id] === idx ? 'bg-blue-200' : ''}\`}
-              onClick={() => handleSelect(q._id, idx)}
-            >
-              {opt}
-            </button>
+            key={idx}
+            className={`block w-full text-left px-4 py-2 my-1 border rounded hover:bg-blue-100 ${answers[q._id] === idx ? 'bg-blue-200' : ''}`}
+            onClick={() => handleSelect(q._id, idx)}
+          >
+            {opt}
+          </button>
+          
           ))}
           {submitted && (
             <p className="mt-2 text-sm">

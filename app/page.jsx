@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useEffect, useState } from 'react';
 
@@ -20,7 +19,7 @@ export default function QuizApp() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     let total = 0;
     questions.forEach(q => {
       if (answers[q._id] === q.correctAnswerIndex) {
@@ -29,6 +28,16 @@ export default function QuizApp() {
     });
     setScore(total);
     setSubmitted(true);
+
+    try {
+      await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + '/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ score, total, answers })
+      });
+    } catch (error) {
+      console.error('Progress save failed', error);
+    }
   };
 
   return (
@@ -37,16 +46,25 @@ export default function QuizApp() {
       {questions.map((q, i) => (
         <div key={q._id} className="mb-6 border p-4 rounded">
           <p className="font-semibold mb-2">{i + 1}. {q.question}</p>
-          {q.options.map((opt, idx) => (
-            <button
-            key={idx}
-            className={`block w-full text-left px-4 py-2 my-1 border rounded hover:bg-blue-100 ${answers[q._id] === idx ? 'bg-blue-200' : ''}`}
-            onClick={() => handleSelect(q._id, idx)}
-          >
-            {opt}
-          </button>
-          
-          ))}
+          {q.options.map((opt, idx) => {
+            const isSelected = answers[q._id] === idx;
+            const isCorrect = q.correctAnswerIndex === idx;
+            const isSubmittedWrong = submitted && isSelected && !isCorrect;
+
+            return (
+              <button
+                key={idx}
+                className={`block w-full text-left px-4 py-2 my-1 border rounded 
+                  ${isSelected ? 'bg-blue-200' : ''} 
+                  ${submitted && isCorrect ? 'bg-green-200' : ''} 
+                  ${isSubmittedWrong ? 'bg-red-200' : ''} 
+                  hover:bg-blue-100`}
+                onClick={() => handleSelect(q._id, idx)}
+              >
+                {opt}
+              </button>
+            );
+          })}
           {submitted && (
             <p className="mt-2 text-sm">
               Correct Answer: <strong>{q.options[q.correctAnswerIndex]}</strong>

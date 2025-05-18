@@ -40,6 +40,20 @@ export default function QuizApp() {
     }
   };
 
+  const getButtonClasses = (q, idx) => {
+    const isSelected = answers[q._id] === idx;
+    const isCorrect = q.correctAnswerIndex === idx;
+    const isWrong = submitted && isSelected && !isCorrect;
+
+    let base = 'block w-full text-left px-4 py-2 my-1 border rounded hover:bg-blue-100';
+
+    if (isCorrect && submitted) return `${base} bg-green-200`;
+    if (isWrong) return `${base} bg-red-200`;
+    if (isSelected) return `${base} bg-blue-200`;
+
+    return base;
+  };
+
   return (
     <div className="max-w-3xl mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Thermodynamics Quiz</h1>
@@ -47,19 +61,12 @@ export default function QuizApp() {
         <div key={q._id} className="mb-6 border p-4 rounded shadow-sm">
           <p className="font-semibold mb-2 text-lg">{i + 1}. {q.question}</p>
           {q.options.map((opt, idx) => {
-            const isSelected = answers[q._id] === idx;
-            const isCorrect = q.correctAnswerIndex === idx;
-            const isSubmittedWrong = submitted && isSelected && !isCorrect;
             const optionLabel = String.fromCharCode(65 + idx); // A, B, C, D
 
             return (
               <button
                 key={idx}
-                className={`block w-full text-left px-4 py-2 my-1 border rounded 
-                  ${isSelected ? 'bg-blue-200' : ''} 
-                  ${submitted && isCorrect ? 'bg-green-200' : ''} 
-                  ${isSubmittedWrong ? 'bg-red-200' : ''} 
-                  hover:bg-blue-100`}
+                className={getButtonClasses(q, idx)}
                 onClick={() => handleSelect(q._id, idx)}
               >
                 <strong>{optionLabel}.</strong> {opt}
